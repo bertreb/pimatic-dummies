@@ -1,0 +1,45 @@
+{
+  "name": "pimatic-dummies",
+  "description": "Dummy devices plugin for Pimatic home automation system",
+  "author": {
+    "name": "Bert Gierveld",
+    "email": "gitbertreb@gmail.com",
+    "url": "https://github.com/bertreb"
+  },
+  "main": "pimatic-dummies",
+  "files": [
+    "pimatic-dummies.coffee",
+    "pimatic-dummies-config-schema.coffee",
+    "device-config-schema.coffee",
+    "base.coffee",
+    "color_schema.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/bertreb/pimatic-dummies.git",
+  "keywords": [
+    "pimatic",
+    "dummydevices",
+    "garagedoor",
+    "smartplug"
+  ],
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bertreb/pimatic-dummies.git"
+  },
+  "configSchema": "pimatic-dummies-config-schema.coffee",
+  "dependencies": {
+    "cassert": "^0.1.2",
+    "color": "^0.8.0",
+    "lodash": "^4.17.15",
+    "decl-api": "^0.0.24"
+  },
+  "peerDependencies": {
+    "pimatic": "0.9.*"
+  },
+  "engines": {
+    "node": ">=4",
+    "npm": ">=2"
+  }
+}
