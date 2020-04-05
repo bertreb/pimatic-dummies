@@ -11,6 +11,7 @@
     "pimatic-dummies.coffee",
     "pimatic-dummies-config-schema.coffee",
     "device-config-schema.coffee",
+    "ui",
     "base.coffee",
     "color_schema.json",
     "README.md",
