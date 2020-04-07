@@ -30,6 +30,10 @@ module.exports = (env) ->
        description: 'brightness of the light'
        type: t.number
        unit: '%'
+      dimlevel:
+       description: 'dimlevel of the light'
+       type: t.number
+       unit: '%'
 
     template: 'led-light'
 
@@ -41,6 +45,8 @@ module.exports = (env) ->
             type: t.boolean
       getMode:
         description: 'returns the light mode'
+      getDimlevel:
+        description: 'returns the dimlevel(brightness) mode'
       turnOn:
         description: 'turns the light on'
       turnOff:
@@ -106,6 +112,7 @@ module.exports = (env) ->
         #console.log "hexColor:", hexColor
         @_setPower state.power
         @_setAttribute 'brightness', state.brightness
+        @_setAttribute 'dimlevel', state.brightness
         @_setAttribute 'color', hexColor
 
     getPower: -> Promise.resolve @power

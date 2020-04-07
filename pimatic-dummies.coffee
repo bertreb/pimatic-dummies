@@ -81,6 +81,13 @@ module.exports = (env) ->
       @_updateState brightness: newBrightness
       Promise.resolve()
 
+    getDimlevel: () ->
+      Promise.resolve @_dimlevel
+
+    changeDimlevelTo: (dimLevel) -> 
+      @setBrightness(dimLevel)
+
+
     destroy:()=>
       super()
 
