@@ -6,4 +6,10 @@ module.exports = {
     extensions: ["xAttributeOptions"]
     properties:{}
   }
+  DummyLightRGBCT: {
+    title: "DummylightRGBCT config options"
+    type: "object"
+    extensions: ["xAttributeOptions"]
+    properties:{}
+  }
 }
