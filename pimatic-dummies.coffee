@@ -125,7 +125,7 @@ module.exports = (env) ->
       @_sat = lastState?.sat?.value
 
       @actions.setCT =
-        description: 'set light color'
+        description: 'set light CT color'
         params:
           colorCode:
             type: t.number
