@@ -174,6 +174,9 @@ $(document).on 'templateinit', (event) ->
       )
       @pickId = "pick-#{templData.deviceId}"
 
+      console.log("Check to hier: ")
+
+
     getItemTemplate: => 'light-rgbct'
 
     onSliderStop2: ->
@@ -199,23 +202,33 @@ $(document).on 'templateinit', (event) ->
       )
       @colorPicker = $(elements).find('.light-color')
       @colorPicker.spectrum
-        preferredFormat: 'hsv'
+        preferredFormat: 'hex'
         showButtons: false
         allowEmpty: true
         showInput: true
       $('.sp-container').addClass('ui-corner-all ui-shadow')
 
+      @colorPicker.on 'change', (e, payload) =>
+        return if payload?.origin unless 'remote'
+        @colorPicker.spectrum 'set', $(e.target).val()
+      @_onRemoteChange 'color', @colorPicker
+
+    _onRemoteChange: (attributeString, el) ->
+      attribute = @getAttribute(attributeString)
+      console.log("remote change: "+attributeString)
+
+      unless attributeString?
+        throw new Error("An RGBCT-Light device needs an #{attributeString} attribute!")
+
+      @[attributeString] = ko.observable attribute.value()
+      attribute.value.subscribe (newValue) =>
+        @[attributeString] newValue
+        el.val(@[attributeString]()).trigger 'change', [origin: 'remote']
+
     _changeColor: (color) ->
-      r = @colorPicker.spectrum('get').toRgb()['r']
-      g = @colorPicker.spectrum('get').toRgb()['g']
-      b = @colorPicker.spectrum('get').toRgb()['b']
-      @device.rest.changeHueSatValTo(
-        {hue: @colorPicker.spectrum('get').toHsv()['h'] / 360 * 100,
-        sat: @colorPicker.spectrum('get').toHsv()['s'] * 100},
-        global: no
-      )
-      return @device.rest.setRGB(
-          {r: r, g: g, b: b}, global: no
+      color = @colorPicker.spectrum('get').toHex()
+      return @device.rest.setColor(
+          {colorCode: color}, global: no
         ).then(ajaxShowToast, ajaxAlertFail)
 
   # register the item-class

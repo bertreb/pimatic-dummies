@@ -91,6 +91,24 @@ module.exports = (env) ->
       @setBrightness(dimLevel)
 
 
+    execute: (params) =>
+      switch params.type
+        when "color"
+          return @setColor(params.value)
+        when "temperature"
+          temperatureColor = new Color()
+          hue = 30 + 240 * (30 - params.value) / 60;
+          temperatureColor.hsl(hue, 70, 50)
+
+          hexColor = '#'
+          hexColor += temperatureColor.rgb().r.toString(16)
+          hexColor += temperatureColor.rgb().g.toString(16)
+          hexColor += temperatureColor.rgb().b.toString(16)
+
+          return @setColor(hexColor)
+        else
+          return Promise.reject("wrong parameter type " + params.type)
+
     destroy:()=>
       super()
 
@@ -102,20 +120,19 @@ module.exports = (env) ->
     constructor: (@config,lastState) ->
       @id = @config.id
       @name = @config.name
+      @_color = lastState?.color or ''
       @_dimlevel = lastState?.dimlevel?.value or 0
       @_lastdimlevel = lastState?.lastdimlevel?.value or 100
       @_state = lastState?.state?.value or off
       @_transtime = @config.transtime
 
       @addAttribute  'ct',
-          description: "color Temperature",
-          type: t.number
-      @addAttribute  'hue',
-          description: "color Temperature",
-          type: t.number
-      @addAttribute  'sat',
-          description: "color Temperature",
-          type: t.number
+        description: "color Temperature",
+        type: t.number
+      @addAttribute  'color',
+        description: 'color of the light'
+        type: t.string
+
 
       @ctmin = 153
       @ctmax = 500
@@ -124,53 +141,16 @@ module.exports = (env) ->
       @_hue = lastState?.hue?.value
       @_sat = lastState?.sat?.value
 
+      @actions.setColor =
+        description: 'set a light color'
+        params:
+          colorCode:
+            type: t.string
       @actions.setCT =
         description: 'set light CT color'
         params:
           colorCode:
             type: t.number
-      @actions.changeHueSatTo =
-        description: 'set light color'
-        params:
-          hue:
-            type: t.number
-          sat:
-            type: t.number
-          time:
-            type: t.number
-            optional: yes
-      @actions.changeHueSatValTo =
-        description: 'set light color values without transmit'
-        params:
-          hue:
-            type: t.number
-          sat:
-            type: t.number
-      @actions.setRGB =
-        description: 'set light color'
-        params:
-          r:
-            type: t.number
-          g:
-            type: t.number
-          b:
-            type: t.number
-      @actions.changeHueTo =
-        description: 'set light color'
-        params:
-          hue:
-            type: t.number
-          time:
-            type: t.number
-            optional: yes
-      @actions.changeSatTo =
-        description: 'set light color'
-        params:
-          sat:
-            type: t.number
-          time:
-            type: t.number
-            optional: yes
 
       super()
 
@@ -183,6 +163,7 @@ module.exports = (env) ->
       if @_ct is color then return
       @_ct = color
       @emit "ct", color
+
 
     setCT: (color,time) =>
       param = {
@@ -219,75 +200,20 @@ module.exports = (env) ->
         return Promise.reject(error)
       )
 
-    _setHue: (hueVal) ->
-      hueVal = parseFloat(hueVal)
-      assert not isNaN(hueVal)
-      assert 0 <= hueVal <= 100
-      unless @_hue is hueVal
-        @_hue = hueVal
-        @emit "hue", hueVal
-
-    _setSat: (satVal) ->
-      satVal = parseFloat(satVal)
-      assert not isNaN(satVal)
-      assert 0 <= satVal <= 100
-      unless @_sat is satVal
-        @_sat = satVal
-        @emit "sat", satVal
-
-    getHue: -> Promise.resolve(@_hue)
-
-    getSat: -> Promise.resolve(@_sat)
-
-    changeHueTo: (hue, time) ->
-      param = {
-        on: true,
-        hue: parseInt(hue/100*65535),
-# not working with transtime
-#        transitiontime: time or @_transtime
-      }
-      @_sendState(param).then( () =>
-        @_setHue hue
-        return Promise.resolve()
-      ).catch( (error) =>
-        return Promise.reject(error)
+    _setColor: (color) =>
+      return new Promise((resolve,reject) =>
+        if @_color is color then return
+        @_color = color
+        @emit "color", color
+        resolve()
       )
 
-    changeSatTo: (sat, time) ->
-      param = {
-        on: true,
-        sat: parseInt (sat/100*254),
-# not working with transtime
-#        transitiontime: time or @_transtime
-      }
-      @_sendState(param).then( () =>
-        @_setSat sat
-        return Promise.resolve()
-      ).catch( (error) =>
-        return Promise.reject(error)
-      )
-    changeHueSatValTo: (hue, sat) ->
-      @_setHue hue
-      @_setSat sat
-      return Promise.resolve()
+    getColor: -> Promise.resolve(@_color)
 
-    changeHueSatTo: (hue, sat, time) ->
-      param = {
-        on: true,
-        sat: (sat/100*254),
-        hue: (hue/100*65535),
-        transitiontime: time or @_transtime
-      }
-      p1 = @changeSatTo(sat,time)
-      p2 = @changeHueTo(hue,time)
+    setColor: (newColor) ->
+      #color = new Color(newColor).rgb()
+      return @_setColor(newColor)
 
-      Promise.all([p1,p2]).then( () =>
-        @_setHue hue
-        @_setSat sat
-        return Promise.resolve()
-      ).catch( (error) =>
-        return Promise.reject(error)
-      )
 
     check = (val) ->
       val = Math.max(Math.min(val, 255), 0) / 255.0
@@ -308,20 +234,6 @@ module.exports = (env) ->
         return  [ 0.44758179 , 0.4074481 ]
       else
         return [ X / total , Y / total]
-
-    setRGB: (r,g,b,time) ->
-      xy=@rgb_to_xyY(r,g,b)
-      param = {
-        on: true,
-        xy: xy,
-        transitiontime: time or @_transtime
-      }
-      @_sendState(param).then( () =>
-        #@_setCt(color)
-        return Promise.resolve()
-      ).catch( (error) =>
-        return Promise.reject(error)
-      )
 
     _sendState: (param) ->
       return Promise.resolve()
@@ -347,6 +259,20 @@ module.exports = (env) ->
         return Promise.reject(Error("gateway not online"))
       ###
 
+    execute: (params) =>
+      env.logger.debug "Execute " + JSON.stringify(params,null,2)
+      switch params.type
+        when "color"
+          if params.value.startsWith('#')
+            _params = (params.value).substring(1)
+          else
+            _params = params.value
+          return @setColor(params.value)
+        when "temperature"
+          return @setCT(params.value)
+        else
+          return Promise.reject("wrong parameter type " + params.type)
+
     destroy: ->
       super()
 
@@ -355,8 +281,8 @@ module.exports = (env) ->
       constructor: (@framework) ->
 
       parseAction: (input, context) =>
-        iwyDevices = _(@framework.deviceManager.devices).values().filter(
-          (device) => device.hasAction("setColor")
+        lightDevices = _(@framework.deviceManager.devices).values().filter(
+          (device) => device.hasAction("setColor") or device.hasAction("setCT")
         ).value()
 
         hadPrefix = false
@@ -370,7 +296,7 @@ module.exports = (env) ->
         variable = null
 
         # device name -> color
-        m.matchDevice iwyDevices, (m, d) ->
+        m.matchDevice lightDevices, (m, d) ->
           # Already had a match with another device?
           if device? and device.id isnt d.id
             context?.addError(""""#{input.trim()}" is ambiguous.""")
@@ -414,38 +340,30 @@ module.exports = (env) ->
           return null
 
   class ColorActionHandler extends env.actions.ActionHandler
-    constructor: (@provider, @device, @color, @variable) ->
-      @_variableManager = null
-
-      if @variable
-        @_variableManager = @provider.framework.variableManager
+    constructor: (@framework, @device, @color, @variable) ->
 
     executeAction: (simulate) =>
-      getColor = (callback) =>
-        if @variable
-          @_variableManager.evaluateStringExpression([@variable])
-            .then (temperature) =>
-              temperatureColor = new Color()
-              hue = 30 + 240 * (30 - temperature) / 60;
-              temperatureColor.hsl(hue, 70, 50)
-
-              hexColor = '#'
-              hexColor += temperatureColor.rgb().r.toString(16)
-              hexColor += temperatureColor.rgb().g.toString(16)
-              hexColor += temperatureColor.rgb().b.toString(16)
-
-              callback hexColor, simulate
-        else
-          callback @color, simulate
-
-      getColor @setColor
-
-    setColor: (color, simulate) =>
       if simulate
-        return Promise.resolve(__("would log set color #{color}"))
+        return Promise.resolve(__("would log set color #{@color}"))
       else
-        @device.setColor color
-        return Promise.resolve(__("set color #{color}"))
+        @params = {}
+        if @variable?
+          @framwework.evaluateStringExpression([@variable])
+          .then((temperature) =>
+            @params =
+              type: "temperature"
+              value: temperature
+          )
+        else
+          @params =
+            type: "color"
+            value: @color
 
+        @device.execute(@params)
+        .then(()=>
+          return __("\"%s\" Rule executed", "set #{@params.type} to #{@params.value}")
+        ).catch((err)=>
+          return __("\"%s\" Rule not executed", "set #{@params.type} to #{@params.value}")
+        )
 
   return new DummiesPlugin()
