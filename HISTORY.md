@@ -6,3 +6,5 @@
 	* added dimlevel attribute
 * 20200624, v0.1.0
 	* created a second dummies device: DummyLightRGBCT
+* 20200624, v0.1.1
+	* update layout DummyLightRGBCT

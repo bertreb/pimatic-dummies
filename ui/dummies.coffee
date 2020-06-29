@@ -165,7 +165,7 @@ $(document).on 'templateinit', (event) ->
       @csliderId = "color-#{templData.deviceId}"
       colorAttribute = @getAttribute('ct')
       unless colorAttribute?
-        throw new Error("A dimmer device needs an color attribute!")
+        throw new Error("A dimmer device needs an ct attribute!")
       color = colorAttribute.value
       @csliderValue = ko.observable(if color()? then color() else 0)
       colorAttribute.value.subscribe( (newColor) =>
@@ -173,9 +173,6 @@ $(document).on 'templateinit', (event) ->
         pimatic.try => @csliderEle.slider('refresh')
       )
       @pickId = "pick-#{templData.deviceId}"
-
-      console.log("Check to hier: ")
-
 
     getItemTemplate: => 'light-rgbct'
 
@@ -206,6 +203,7 @@ $(document).on 'templateinit', (event) ->
         showButtons: false
         allowEmpty: true
         showInput: true
+
       $('.sp-container').addClass('ui-corner-all ui-shadow')
 
       @colorPicker.on 'change', (e, payload) =>
@@ -215,8 +213,6 @@ $(document).on 'templateinit', (event) ->
 
     _onRemoteChange: (attributeString, el) ->
       attribute = @getAttribute(attributeString)
-      console.log("remote change: "+attributeString)
-
       unless attributeString?
         throw new Error("An RGBCT-Light device needs an #{attributeString} attribute!")
 

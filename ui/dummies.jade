@@ -12,28 +12,28 @@ script#light-rgbct-template(type='text/template')
       div.ui-color
         div.ui-colorpicker(class="ui-flipswitch ui-corner-all")
           input.light-color(data-bind="attr: { id: pickId }")
-        div.ui-midspacer
+        div.ui-smallspacer
         input.cdimmer(min="0", max="100", step="1", data-highlight="true",
           data-bind="attr: { id: csliderId }, value: csliderValue")
 
 script#led-light-template(type='text/template').
   <li data-bind="attr: { id: id }" class="sortable no-header">
-  <div class="light-container">
-  <div class="light-label-container">
-  <label data-bind="text: name, tooltip: $data.labelTooltipHtml" class="device-label"></label>
-  </div>
-  <div class="light-brightness-container">
-  <input min="0" max="100" step="1" class="light-brightness">
-  </div>
-  <div class="light-color-container">
-  <input class="light-color">
-  </div>
-  <div class="light-power-container">
-  <select data-bind="attr: { value: power }" class="light-power">
-  <option value="off">Off</option>
-  <option value="on">On</option>
-  </select>
-  </div>
-  </div>
-  <span data-bind="text: ($data.error() ? $data.error() : '') " class="error"></span>
+    <div class="light-container">
+      <div class="light-label-container">
+        <label data-bind="text: name, tooltip: $data.labelTooltipHtml" class="device-label"></label>
+      </div>
+      <div class="light-brightness-container">
+        <input min="0" max="100" step="1" class="light-brightness">
+      </div>
+      <div class="light-color-container">
+        <input class="light-color">
+      </div>
+      <div class="light-power-container">
+        <select data-bind="attr: { value: power }" class="light-power">
+        <option value="off">Off</option>
+        <option value="on">On</option>
+        </select>
+      </div>
+    </div>
+    <span data-bind="text: ($data.error() ? $data.error() : '') " class="error"></span>
   </li>

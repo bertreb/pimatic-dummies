@@ -120,11 +120,13 @@ module.exports = (env) ->
     constructor: (@config,lastState) ->
       @id = @config.id
       @name = @config.name
-      @_color = lastState?.color or ''
+      @_state = lastState?.state?.value or off
       @_dimlevel = lastState?.dimlevel?.value or 0
       @_lastdimlevel = lastState?.lastdimlevel?.value or 100
-      @_state = lastState?.state?.value or off
-      @_transtime = @config.transtime
+      @ctmin = 153
+      @ctmax = 500
+      @_ct = lastState?.ct?.value or @ctmin
+      @_color = lastState?.color?.value or ''
 
       @addAttribute  'ct',
         description: "color Temperature",
@@ -134,12 +136,6 @@ module.exports = (env) ->
         type: t.string
 
 
-      @ctmin = 153
-      @ctmax = 500
-      @_ct = lastState?.ct?.value or @ctmin
-      #@_color = 0
-      @_hue = lastState?.hue?.value
-      @_sat = lastState?.sat?.value
 
       @actions.setColor =
         description: 'set a light color'
@@ -202,7 +198,7 @@ module.exports = (env) ->
 
     _setColor: (color) =>
       return new Promise((resolve,reject) =>
-        if @_color is color then return
+        #if @_color is color then return
         @_color = color
         @emit "color", color
         resolve()
@@ -237,27 +233,6 @@ module.exports = (env) ->
 
     _sendState: (param) ->
       return Promise.resolve()
-      ###
-      if (myRaspBeePlugin.ready)
-        myRaspBeePlugin.Connector.setLightState(@deviceID,param).then( (res) =>
-          env.logger.debug ("New value send to device #{@name}")
-          env.logger.debug (param)
-          if res[0].success?
-            return Promise.resolve()
-          else
-            if (res[0].error.type is 3 )
-              @_setPresence(false)
-              return Promise.reject(Error("device #{@name} not reachable"))
-            else if (res[0].error.type is 201 )
-              return Promise.reject(Error("device #{@name} is not modifiable. Device is set to off"))
-            else Promise.reject(Error("general error"))
-        ).catch( (error) =>
-          return Promise.reject(error)
-        )
-      else
-        env.logger.error ("gateway not online")
-        return Promise.reject(Error("gateway not online"))
-      ###
 
     execute: (params) =>
       env.logger.debug "Execute " + JSON.stringify(params,null,2)
