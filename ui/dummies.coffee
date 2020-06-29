@@ -210,6 +210,7 @@ $(document).on 'templateinit', (event) ->
         return if payload?.origin unless 'remote'
         @colorPicker.spectrum 'set', $(e.target).val()
       @_onRemoteChange 'color', @colorPicker
+      @colorPicker.spectrum 'set', @color()
 
     _onRemoteChange: (attributeString, el) ->
       attribute = @getAttribute(attributeString)

@@ -17,10 +17,10 @@ module.exports = (env) ->
       deviceConfigDef = require('./device-config-schema.coffee')
       @framework.deviceManager.registerDeviceClass 'DummyLedLight',
         configDef: deviceConfigDef.DummyLedLight
-        createCallback: (config) -> return new DummyLedLight(config)
+        createCallback: (config, lastState) -> return new DummyLedLight(config, lastState)
       @framework.deviceManager.registerDeviceClass 'DummyLightRGBCT',
         configDef: deviceConfigDef.DummyLightRGBCT
-        createCallback: (config) -> return new DummyLightRGBCT(config)
+        createCallback: (config, lastState) => return new DummyLightRGBCT(config, lastState, @framework)
 
       @framework.ruleManager.addActionProvider(new ColorActionProvider(@framework))
 
@@ -117,7 +117,7 @@ module.exports = (env) ->
     _lastdimlevel: null
     template: 'light-rgbct'
 
-    constructor: (@config,lastState) ->
+    constructor: (@config,lastState, @framework) ->
       @id = @config.id
       @name = @config.name
       @_state = lastState?.state?.value or off
@@ -135,8 +135,6 @@ module.exports = (env) ->
         description: 'color of the light'
         type: t.string
 
-
-
       @actions.setColor =
         description: 'set a light color'
         params:
@@ -147,6 +145,11 @@ module.exports = (env) ->
         params:
           colorCode:
             type: t.number
+
+      @framework.variableManager.waitForInit()
+      .then(()=>
+        @setColor(@_color)
+      )
 
       super()
 

@@ -24,7 +24,7 @@
     "garagedoor",
     "smartplug"
   ],
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bertreb/pimatic-dummies.git"
