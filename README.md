@@ -27,7 +27,7 @@ The device can be controlled via the gui and via rules.
 The rules syntax is
 
 `
-set <DummyLightRGBW device> to [<hex color> | <colorname> | temperature based color by variable <$variable>] 
+set <DummyLightRGBW device> to [<hex color> | <colorname> | <temperature> | <$variable>]
 `
 
 Color definitions
@@ -38,3 +38,7 @@ Color definitions
 `
 
 color names can be found in color_schema.json
+
+temperature must be between 0-100
+
+For the content of the variable, the same color logic applies

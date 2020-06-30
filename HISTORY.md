@@ -8,3 +8,6 @@
 	* created a second dummies device: DummyLightRGBCT
 * 20200624, v0.1.1
 	* update layout DummyLightRGBCT
+* 20200624, v0.1.4
+	* changed DummyLightRGBCT to DummyLightRGBW
+	* changed rule syntax

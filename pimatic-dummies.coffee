@@ -257,7 +257,7 @@ module.exports = (env) ->
             _params = params.value
           return @setColor(params.value)
         when "temperature"
-          return @setCT(params.value)
+          return @setCT(params.value)        
         else
           return Promise.reject("wrong parameter type " + params.type)
 
@@ -280,8 +280,8 @@ module.exports = (env) ->
 
         device = null
         color = null
-        match = null
         variable = null
+        match = null
 
         # device name -> color
         m.matchDevice lightDevices, (m, d) ->
@@ -306,23 +306,31 @@ module.exports = (env) ->
                   color = color_schema[s]
                   match = m.getFullMatch()
 
-              # color by temperature from variable like $weather.temperature = 30
+              # color temperature number
+              (m) -> m.matchNumber  (m, s) ->
+                  lKT = 0
+                  hKT = 100
+                  if s < lKT or s > hKT
+                    context?.addError("Color temprature must be between #{lKT} and #{hKT}")                 
+                  color = s
+                  match = m.getFullMatch()
+
+              # color by from variable with hex color, color name or color temperature
               (m) ->
-                m.match ['temperature based color by variable '], (m) ->
-                  m.matchVariable (m, s) ->
-                    variable = s
-                    match = m.getFullMatch()
+                m.matchVariable (m, s) ->
+                  variable = s
+                  match = m.getFullMatch()
             ]
 
         if match?
           assert device?
           # either variable or color should be set
           assert variable? ^ color?
-          assert typeof match is "string"
+          #assert typeof match is "string"
           return {
             token: match
             nextInput: input.substring(match.length)
-            actionHandler: new ColorActionHandler(@, device, color, variable)
+            actionHandler: new ColorActionHandler(@framework, device, color, variable)
           }
         else
           return null
@@ -336,16 +344,19 @@ module.exports = (env) ->
       else
         @params = {}
         if @variable?
-          @framwework.evaluateStringExpression([@variable])
-          .then((temperature) =>
-            @params =
-              type: "temperature"
-              value: temperature
-          )
+          varColor = @framework.variableManager.getVariableValue(@variable.replace("$",""))
+          if varColor?
+            @_color = varColor
         else
+          @_color = @color
+        if String(@_color).startsWith('#')
           @params =
             type: "color"
-            value: @color
+            value: @_color
+        else
+          @params =
+            type: "temperature"
+            value: @_color
 
         @device.execute(@params)
         .then(()=>
