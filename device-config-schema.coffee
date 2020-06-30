@@ -6,8 +6,8 @@ module.exports = {
     extensions: ["xAttributeOptions"]
     properties:{}
   }
-  DummyLightRGBCT: {
-    title: "DummylightRGBCT config options"
+  DummyLightRGBW: {
+    title: "DummylightRGBW config options"
     type: "object"
     extensions: ["xAttributeOptions"]
     properties:{}

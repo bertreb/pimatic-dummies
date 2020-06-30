@@ -14,13 +14,23 @@ module.exports = (env) ->
   class DummiesPlugin extends env.plugins.Plugin
 
     init: (app, @framework, @config) =>
+
+      oldClassName = "DummyLightRGBCT"
+      newClassName = "DummyLightRGBW"
+      for device,i in @framework.config.devices
+        className = device.class
+        #convert SoundsDevice to new ChromecastDevice
+        if className == oldClassName
+          @framework.config.devices[i].class = newClassName
+          env.logger.debug "Class '#{oldClassName}' of device '#{device.id}' migrated to #{newClassName}"
+
       deviceConfigDef = require('./device-config-schema.coffee')
       @framework.deviceManager.registerDeviceClass 'DummyLedLight',
         configDef: deviceConfigDef.DummyLedLight
         createCallback: (config, lastState) -> return new DummyLedLight(config, lastState)
-      @framework.deviceManager.registerDeviceClass 'DummyLightRGBCT',
-        configDef: deviceConfigDef.DummyLightRGBCT
-        createCallback: (config, lastState) => return new DummyLightRGBCT(config, lastState, @framework)
+      @framework.deviceManager.registerDeviceClass 'DummyLightRGBW',
+        configDef: deviceConfigDef.DummyLightRGBW
+        createCallback: (config, lastState) => return new DummyLightRGBW(config, lastState, @framework)
 
       @framework.ruleManager.addActionProvider(new ColorActionProvider(@framework))
 
@@ -112,7 +122,7 @@ module.exports = (env) ->
     destroy:()=>
       super()
 
-  class DummyLightRGBCT extends env.devices.DimmerActuator
+  class DummyLightRGBW extends env.devices.DimmerActuator
 
     _lastdimlevel: null
     template: 'light-rgbct'
