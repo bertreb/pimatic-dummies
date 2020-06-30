@@ -16,6 +16,7 @@ The rules syntax is
 `
 set <DummyLedLight device> to [<hex color> | <colorname> | temperature based color by variable <$variable>
 `
+
 DummyLightRGBW
 ----
 The DummyLightRGBW device is a dimmer actuator device with brightness (the dimmer), color temprature and color (RGB).
