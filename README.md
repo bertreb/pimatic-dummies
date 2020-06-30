@@ -12,16 +12,23 @@ The DummyLedLight device is a renewed pimatic-led-light device made useable with
 The device can be controlled via the gui and via rules.
 
 The rules syntax is
-set \<DummyLedLight device> to [#1A5B9F | \<colorname> | temperature based color by variable <$variable>] 
-
-
+`
+set <DummyLedLight device> to [<hex color> | <colorname> | temperature based color by variable <$variable>
+`
 DummyLightRGBW
 ----
 The DummyLightRGBW device is a dimmer actuator device with brightness (the dimmer), color temprature and color (RGB).
+This device is based on the RaspBee-RGBCT device from [treban](https://github.com/treban/pimatic-raspbee)
 
 The device can be controlled via the gui and via rules.
 
 The rules syntax is
-set \<DummyLightRGBW device> to [#1A5B9F | \<colorname> | temperature based color by variable <$variable>] 
+`
+set <DummyLightRGBW device> to [#<hex color> | <colorname> | temperature based color by variable <$variable>] 
+`
 
 
+`
+<hex color> is in the format #[0-F][0-F][0-F][0-F][0-F][0-F] like #1F00A0
+`
+color names can be found in color_schema.json
