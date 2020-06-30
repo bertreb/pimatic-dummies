@@ -37,8 +37,8 @@ Color definitions
 <hex color> is in the format #[0-F][0-F][0-F][0-F][0-F][0-F] like #1F00A0
 `
 
-color names can be found in color_schema.json
+\<color names> can be found in color_schema.json
 
-temperature must be between 0-100
+\<temperature> must be between 0-100
 
 For the content of the variable, the same color logic applies
