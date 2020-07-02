@@ -11,3 +11,5 @@
 * 20200624, v0.1.4
 	* changed DummyLightRGBCT to DummyLightRGBW
 	* changed rule syntax
+* 20200702, v0.2.0
+	* added DummyThermostat device

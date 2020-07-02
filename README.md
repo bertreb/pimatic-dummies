@@ -3,7 +3,7 @@ Pimatic plugin for extra dummy devices
 
 This plugin creates dummy devices to use within Pimatic. Dummy device are mostly used for user interaction via the gui and rule based actions. Dummy devices do not directly control a device.
 
-The plugin supports 2 devices; DummyLedLight and DummyLightRGBW
+The plugin supports 3 devices; DummyLedLight, DummyLightRGBW and DummyThermostat
 
 DummyLedLight
 ----
@@ -16,7 +16,7 @@ The device can be controlled via the gui and via rules.
 The rules syntax:
 
 `
-set <DummyLedLight device> to [<hex color> | <colorname> | temperature based color by variable <$variable>
+set <DummyLedLight device> to [<hex color> | <colorname> | <temperature> | <$variable>]
 `
 
 DummyLightRGBW
@@ -37,7 +37,7 @@ set <DummyLightRGBW device> to [<hex color> | <colorname> | <temperature> | <$va
 #### Color definitions
 
 `
-<hex color> is in the format #[0-F][0-F][0-F][0-F][0-F][0-F] like #1F00A0
+<hex color> is in the format #[0-F][0-F][0-F][0-F][0-F][0-F] // like #1F00A0
 `
 
 \<color names> can be found in color_schema.json
