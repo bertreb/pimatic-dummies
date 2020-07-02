@@ -58,6 +58,7 @@ The rules syntax:
 thermostat <DummyThermostat device> [
 	heat | heatcool | cool |
 	on | eco | off |
-	setpoint <temperature> | setpoint low <temperature> | setpoint high <temperature> |
+	setpoint [<temperature>|<$temp variable>] | 
+	setpoint low [<temperature>|<$temp variable>] | setpoint high [<temperature>|<$temp variable] |
 	program manual | program auto]
 `

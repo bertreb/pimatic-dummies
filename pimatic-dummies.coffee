@@ -789,11 +789,23 @@ module.exports = (env) ->
           when "on"
             @changePowerTo(true)
           when "setpoint"
-            @changeTemperatureTo(options.setpoint)
+            if options.variable
+              _setpoint = @framework.variableManager.getVariableValue(options.setpoint.replace("$",""))
+            else
+              _setpoint = options.setpoint
+            @changeTemperatureTo(_setpoint)
           when "setpointlow"
-            @changeTemperatureLowTo(options.setpointHigh)
+            if options.variable
+              _setpointLow = @framework.variableManager.getVariableValue(options.setpointLow.replace("$",""))
+            else
+              _setpointLow = options.setpointLow
+            @changeTemperatureLowTo(_setpointLow)
           when "setpointhigh"
-            @changeTemperatureHighTo(options.setpointLow)
+            if options.variable
+              _setpointHigh = @framework.variableManager.getVariableValue(options.setpointHigh.replace("$",""))
+            else
+              _setpointHigh = options.setpointHigh
+            @changeTemperatureHighTo(options.setpointHigh)
           when "manual"
             @changeProgramTo("manual")
           when "schedule"
@@ -840,20 +852,33 @@ module.exports = (env) ->
           return
         setCommand("setpoint")
         @parameters["setpoint"] = Number tokens
+        @parameters["variable"] = false
+      setpointVar = (m,tokens) =>
+        setCommand("setpoint")
+        @parameters["setpoint"] = tokens
+        @parameters["variable"] = true
 
-      setpointlow = (m,tokens) =>
+      setpointLow = (m,tokens) =>
         unless tokens >= @dummyThermostatDevice.config.minThresholdCelsius and tokens <= @dummyThermostatDevice.config.maxThresholdCelsius
           context?.addError("Setpoint must be between #{@dummyThermostatDevice.config.minThresholdCelsius} and #{@dummyThermostatDevice.config.maxThresholdCelsius}")
           return
         setCommand("setpointlow")
         @parameters["setpointLow"] = Number tokens
+      setpointLowVar = (m,tokens) =>
+        setCommand("setpointlow")
+        @parameters["setpointLow"] = tokens
+        @parameters["variable"] = true
 
-      setpointhigh = (m,tokens) =>
+      setpointHigh = (m,tokens) =>
         unless tokens >= @dummyThermostatDevice.config.minThresholdCelsius and tokens <= @dummyThermostatDevice.config.maxThresholdCelsius
           context?.addError("Setpoint must be between #{@dummyThermostatDevice.config.minThresholdCelsius} and #{@dummyThermostatDevice.config.maxThresholdCelsius}")
           return
         setCommand("setpointhigh")
         @parameters["setpointHigh"] = Number tokens
+      setpointHighVar = (m,tokens) =>
+        setCommand("setpointhigh")
+        @parameters["setpointHigh"] = tokens
+        @parameters["variable"] = true
 
       m = M(input, context)
         .match('thermostat ')
@@ -903,15 +928,36 @@ module.exports = (env) ->
           )
           ((m) =>
             return m.match(' setpoint ')
-              .matchNumber(setpoint)
+              .or([
+                ((m) =>
+                  m.matchNumber(setpoint)
+                ),
+                ((m) =>
+                  m.matchVariable(setpointVar)
+                )
+              ])
           ),
           ((m) =>
             return m.match(' setpoint low ')
-              .matchNumber(setpointlow)
+              .or([
+                ((m) =>
+                  m.matchNumber(setpointLow)
+                ),
+                ((m) =>
+                  m.matchVariable(setpointLowVar)
+                )
+              ])
           ),
           ((m) =>
             return m.match(' setpoint high ')
-              .matchNumber(setpointhigh)
+              .or([
+                ((m) =>
+                  m.matchNumber(setpointHigh)
+                ),
+                ((m) =>
+                  m.matchVariable(setpointHighVar)
+                )
+              ])
           ),
           ((m) =>
             return m.match(' program ')
@@ -955,7 +1001,7 @@ module.exports = (env) ->
         .then(()=>
           return __("\"%s\" Rule executed", @command)
         ).catch((err)=>
-          return __("\"%s\" Rule not executed", "")
+          return __("\"%s\" Rule not executed", JSON.stringify(err))
         )
 
 
