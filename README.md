@@ -65,13 +65,13 @@ thermostat <DummyThermostat device>
     program manual | program auto
 `
 With this device you get the maximum thermostat functionality in Google Assistant. For that this device can be added in pimatic-assistant.
-Real heaters and coolers can be connected via rules based on the DummyThermostat variables. 
+Real heaters and coolers can be connected via rules based on the DummyThermostat variables.
 
 The variables to be set:
 `
 - setPoint: The target temperature in heat or cool mode. The first input in gui.
-- setPointLow: The Low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
-- setPointHigh: The High target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
+- setPointLow: The low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
+- setPointHigh: The high target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
 - eco: Set the whole thermostat in eco state
 - power: Switch the thermostat on or off
 - mode: The current mode of the heater (heat,heatcool or cool)
