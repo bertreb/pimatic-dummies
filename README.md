@@ -5,11 +5,11 @@ This plugin creates dummy devices to use within Pimatic. Dummy device are mostly
 
 The plugin supports 2 devices; DummyLedLight and DummyLightRGBW
 
-DummyLedLight 
+DummyLedLight
 ----
 The DummyLedLight device is a renewed pimatic-led-light device made useable with node 8+. Its a dimmer actuator device with brightness (the dimmer), color temperature and color (RGB).
 
-![](/screens/dummy-led.png)
+![](/screens/dummy-led2.png)
 
 The device can be controlled via the gui and via rules.
 
