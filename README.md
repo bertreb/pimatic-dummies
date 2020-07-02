@@ -64,3 +64,23 @@ thermostat <DummyThermostat device>
     setpoint low [<temperature>|<$temp variable>] | setpoint high [<temperature>|<$temp variable] |
     program manual | program auto
 `
+With this device you get the maximum thermostat functionality in Google Assistant. For that this device can be added in pimatic-assistant.
+Real heaters and coolers can be connected via rules based on the DummyThermostat variables. 
+
+The variables to be set:
+`
+- <$device-id>.setPoint - The target temperature in heat or cool mode. The first input in gui.
+- <$device-id>.setPointLow - The Low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
+- <$device-id>.setPointHigh - The High target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
+- <$device-id>.eco - Set the whole thermostat in eco state
+- <$device-id>.power - Switch the thermostat on or off
+- <$device-id>.mode - The current mode of the heater (heat,heatcool or cool)
+- <$device-id>.program - The current program  (manual or auto)
+`
+
+The state variables:
+`
+- <$device-id>.active - True if heater or cooler is on
+- <$device-id>.heater - True if the heater is on
+- <$device-id>.cooler - True if the coller is on
+`
