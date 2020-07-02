@@ -5,7 +5,7 @@ This plugin creates dummy devices to use within Pimatic. Dummy device are mostly
 
 The plugin supports 2 devices; DummyLedLight and DummyLightRGBW
 
-DummyLedLight
+DummyLedLight 
 ----
 The DummyLedLight device is a renewed pimatic-led-light device made useable with node 8+. Its a dimmer actuator device with brightness (the dimmer), color temperature and color (RGB).
 
@@ -60,8 +60,7 @@ The rules syntax:
 thermostat <DummyThermostat device>
     heat | heatcool | cool |
     on | eco | off |
-    setpoint [<temperature>|<$temp variable>] | 
+    setpoint [<temperature>|<$temp variable>] |
     setpoint low [<temperature>|<$temp variable>] | setpoint high [<temperature>|<$temp variable] |
     program manual | program auto
 `
-
