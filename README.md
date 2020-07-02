@@ -9,6 +9,8 @@ DummyLedLight
 ----
 The DummyLedLight device is a renewed pimatic-led-light device made useable with node 8+. Its a dimmer actuator device with brightness (the dimmer), color temperature and color (RGB).
 
+![](/screens/dummy-led.png)
+
 The device can be controlled via the gui and via rules.
 
 The rules syntax:
