@@ -22,6 +22,8 @@ DummyLightRGBW
 The DummyLightRGBW device is a dimmer actuator device with brightness (the dimmer), color temprature and color (RGB).
 This device is based on the RaspBee-RGBCT device from [treban](https://github.com/treban/pimatic-raspbee)
 
+[]((/screens/dummy-rgbw.png))
+
 The device can be controlled via the gui and via rules.
 
 The rules syntax:
@@ -42,3 +44,22 @@ Color definitions
 \<temperature> must be between 0-100
 
 For the content of the variable, the same color logic applies
+
+DummyThermostat
+----
+The DummyThermostat device is a thermostat device with heating, heatcool and cooling modes.
+
+[]((/screens/dummy-thermostat.png))
+
+The device can be controlled via the gui and via rules.
+
+The rules syntax:
+
+`
+thermostat <DummyThermostat device> [
+	heat | heatcool | cool | 
+	on | eco | off | 
+	setpoint <temperature> | setpoint low <temperature> | setpoint high <temperature> | 
+	program manual | program auto] 
+`
+
