@@ -54,7 +54,7 @@ The device can be controlled via the gui and via rules.
 
 The rules syntax:
 
-`
+`json
 thermostat <DummyThermostat device> [
 	heat | heatcool | cool |
 	on | eco | off |
