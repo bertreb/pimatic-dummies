@@ -46,7 +46,7 @@ For the content of the variable, the same color logic applies
 
 DummyThermostat
 ----
-The DummyThermostat device is a thermostat device with heating, heatcool and cooling modes.
+The DummyThermostat device is a thermostat device with a heat, heatcool and cool mode.
 
 ![](/screens/dummy-thermostat.png)
 
