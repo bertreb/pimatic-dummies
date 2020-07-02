@@ -32,8 +32,7 @@ The rules syntax:
 set <DummyLightRGBW device> to [<hex color> | <colorname> | <temperature> | <$variable>]
 `
 
-Color definitions
-----
+####Color definitions
 
 `
 <hex color> is in the format #[0-F][0-F][0-F][0-F][0-F][0-F] like #1F00A0
@@ -57,9 +56,8 @@ The rules syntax:
 
 `
 thermostat <DummyThermostat device> [
-	heat | heatcool | cool | 
-	on | eco | off | 
-	setpoint <temperature> | setpoint low <temperature> | setpoint high <temperature> | 
-	program manual | program auto] 
+	heat | heatcool | cool |
+	on | eco | off |
+	setpoint <temperature> | setpoint low <temperature> | setpoint high <temperature> |
+	program manual | program auto]
 `
-
