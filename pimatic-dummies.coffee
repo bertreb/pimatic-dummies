@@ -721,13 +721,13 @@ module.exports = (env) ->
       @handleTemperatureChange()
       return Promise.resolve()
 
-    changeTemperatureLowTo: (temperatureSetpoint) ->
+    changeTemperatureLowTo: (_temperatureSetpoint) ->
       temperatureSetpoint = Math.round(10*_temperatureSetpoint)/10
       @_setSetpointLow(temperatureSetpoint)
       @handleTemperatureChange()
       return Promise.resolve()
 
-    changeTemperatureHighTo: (temperatureSetpoint) ->
+    changeTemperatureHighTo: (_temperatureSetpoint) ->
       temperatureSetpoint = Math.round(10*_temperatureSetpoint)/10
       @_setSetpointHigh(temperatureSetpoint)
       @handleTemperatureChange()
