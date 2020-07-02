@@ -69,18 +69,18 @@ Real heaters and coolers can be connected via rules based on the DummyThermostat
 
 The variables to be set:
 `
-- <$device-id>.setPoint - The target temperature in heat or cool mode. The first input in gui.
-- <$device-id>.setPointLow - The Low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
-- <$device-id>.setPointHigh - The High target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
-- <$device-id>.eco - Set the whole thermostat in eco state
-- <$device-id>.power - Switch the thermostat on or off
-- <$device-id>.mode - The current mode of the heater (heat,heatcool or cool)
-- <$device-id>.program - The current program  (manual or auto)
+- setPoint: The target temperature in heat or cool mode. The first input in gui.
+- setPointLow: The Low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
+- setPointHigh: The High target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
+- eco: Set the whole thermostat in eco state
+- power: Switch the thermostat on or off
+- mode: The current mode of the heater (heat,heatcool or cool)
+- program: The current program  (manual or auto)
 `
 
 The state variables:
 `
-- <$device-id>.active - True if heater or cooler is on
-- <$device-id>.heater - True if the heater is on
-- <$device-id>.cooler - True if the coller is on
+- active: True if heater or cooler is on
+- heater: True if the heater is on
+- cooler: True if the cooler is on
 `
