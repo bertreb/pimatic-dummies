@@ -163,13 +163,13 @@ $(document).on 'templateinit', (event) ->
       super(templData, @device)
       @_colorChanged = false
       @csliderId = "color-#{templData.deviceId}"
-      colorAttribute = @getAttribute('ct')
-      unless colorAttribute?
+      ctAttribute = @getAttribute('ct')
+      unless ctAttribute?
         throw new Error("A dimmer device needs an ct attribute!")
-      color = colorAttribute.value
-      @csliderValue = ko.observable(if color()? then color() else 0)
-      colorAttribute.value.subscribe( (newColor) =>
-        @csliderValue(newColor)
+      ct = ctAttribute.value
+      @csliderValue = ko.observable(if ct()? then ct() else 0)
+      ctAttribute.value.subscribe( (newCt) =>
+        @csliderValue(newCt)
         pimatic.try => @csliderEle.slider('refresh')
       )
       @pickId = "pick-#{templData.deviceId}"

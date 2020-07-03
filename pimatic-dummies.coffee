@@ -28,9 +28,11 @@ module.exports = (env) ->
       @framework.deviceManager.registerDeviceClass 'DummyLedLight',
         configDef: deviceConfigDef.DummyLedLight
         createCallback: (config, lastState) -> return new DummyLedLight(config, lastState)
+
       @framework.deviceManager.registerDeviceClass 'DummyLightRGBW',
         configDef: deviceConfigDef.DummyLightRGBW
         createCallback: (config, lastState) => return new DummyLightRGBW(config, lastState, @framework)
+        
       @framework.deviceManager.registerDeviceClass 'DummyThermostat',
         configDef: deviceConfigDef.DummyThermostat
         createCallback: (config, lastState) => return new DummyThermostat(config, lastState, @framework)
@@ -131,15 +133,15 @@ module.exports = (env) ->
     _lastdimlevel: null
     template: 'light-rgbct'
 
-    constructor: (@config,lastState, @framework) ->
+    constructor: (@config, lastState, @framework) ->
       @id = @config.id
       @name = @config.name
       @_state = lastState?.state?.value or off
       @_dimlevel = lastState?.dimlevel?.value or 0
       @_lastdimlevel = lastState?.lastdimlevel?.value or 100
-      @ctmin = 153
-      @ctmax = 500
-      @_ct = lastState?.ct?.value or @ctmin
+      @ctmin = 0
+      @ctmax = 100
+      @_ct = lastState?.ct?.value or @ctmax
       @_color = lastState?.color?.value or ''
 
       @addAttribute  'ct',
@@ -163,6 +165,7 @@ module.exports = (env) ->
       @framework.variableManager.waitForInit()
       .then(()=>
         @setColor(@_color)
+        @setCT(@_ct)
       )
 
       super()
@@ -172,24 +175,18 @@ module.exports = (env) ->
 
     getCt: -> Promise.resolve(@_ct)
 
-    _setCt: (color) =>
-      if @_ct is color then return
-      @_ct = color
-      @emit "ct", color
-
-
-    setCT: (color,time) =>
-      param = {
-        on: true,
-        ct: Math.round(@ctmin + color / 100 * (@ctmax-@ctmin)),
-        transitiontime: time or @_transtime
-      }
-      @_sendState(param).then( () =>
-        @_setCt(color)
-        return Promise.resolve()
-      ).catch( (error) =>
-        return Promise.reject(error)
+    _setCt: (ct) =>
+      return new Promise((resolve,reject) =>
+        #if @_ct is ct then return
+        @_ct = ct
+        @emit "ct", ct
+        resolve()
       )
+
+    setCT: (ct) =>
+      #@_sendState(param).then( () =>
+      @_setCt(ct)
+      return Promise.resolve()
 
     turnOn: ->
       @changeDimlevelTo(@_lastdimlevel)
@@ -213,11 +210,11 @@ module.exports = (env) ->
         return Promise.reject(error)
       )
 
-    _setColor: (color) =>
+    _setColor: (_color) =>
       return new Promise((resolve,reject) =>
         #if @_color is color then return
-        @_color = color
-        @emit "color", color
+        @_color = _color
+        @emit "color", _color
         resolve()
       )
 
@@ -450,7 +447,6 @@ module.exports = (env) ->
             unless @temperatureRoomDevice?
               throw new Error "Unknown temperature device '#{@temperatureDevice}'"
             @temperatureRoomAttribute = @_temperatureRoomDevice[1]
-            env.logger.info "@temperatureRoomAttribute " + JSON.stringify(@temperatureRoomAttribute,null,2)
             unless @temperatureRoomDevice.hasAttribute(@temperatureRoomAttribute)
               throw new Error "Unknown temperature room attribute '#{@temperatureRoomAttribute}'"
             env.logger.debug "Temperature room device found " + JSON.stringify(@temperatureRoomDevice.config,null,2)
@@ -630,7 +626,7 @@ module.exports = (env) ->
       @emit "battery", @_battery
 
     _setActive: (active) ->
-      if active is @_active then return
+      #if active is @_active then return
       @_active = active
       @emit "active", @_active
 
@@ -766,7 +762,6 @@ module.exports = (env) ->
         else
           @changeHeaterTo(off)
           @changeCoolerTo(off)
-          @changeActiveTo(off)
       )
 
     execute: (device, command, options) =>
