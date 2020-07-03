@@ -64,6 +64,7 @@ thermostat <DummyThermostat device>
     setpoint low [<temperature>|<$temp variable>] | setpoint high [<temperature>|<$temp variable] |
     program manual | program auto
 `
+
 With this device you get the maximum thermostat functionality in Google Assistant. For that this device can be added in pimatic-assistant.
 Real heaters and coolers can be connected via rules based on the DummyThermostat variables.
 
