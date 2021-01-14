@@ -5,7 +5,7 @@ This plugin creates dummy devices to use within Pimatic. Dummy device are mostly
 
 The plugin supports 3 devices; DummyLedLight, DummyLightRGBW and DummyThermostat
 
-## DummyLedLight
+DummyLedLight
 ----
 The DummyLedLight device is a renewed pimatic-led-light device made useable with node 8+. Its a dimmer actuator device with brightness (the dimmer), color temperature and color (RGB).
 
@@ -19,7 +19,7 @@ The rules syntax:
 set <DummyLedLight device> to [<hex color> | <colorname> | <temperature> | <$variable>]
 `
 
-## DummyLightRGBW
+DummyLightRGBW
 ----
 The DummyLightRGBW device is a dimmer actuator device with brightness (the dimmer), color temprature and color (RGB).
 This device is based on the RaspBee-RGBCT device from [treban](https://github.com/treban/pimatic-raspbee)
@@ -46,7 +46,7 @@ set <DummyLightRGBW device> to [<hex color> | <colorname> | <temperature> | <$va
 
 For the content of the variable, the same color logic applies
 
-## DummyThermostat
+DummyThermostat
 ----
 The DummyThermostat device is a thermostat device with a heat, heatcool and cool mode.
 
@@ -86,7 +86,7 @@ The state variables:
 - cooler: True if the cooler is on
 `
 
-## DummyAlarmPanel
+DummyAlarmPanel
 ----
 The DummyAlarmPanel device is a alarmpanel device for arming and disarming Pimatic alarm systems. DummyAlarmPanel is home-assistant compatible.
 
