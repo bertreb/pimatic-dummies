@@ -52,6 +52,7 @@ The DummyThermostat device is a thermostat device with a heat, heatcool and cool
 
 ![](/screens/dummy-thermostat.png)
 
+
 The device can be controlled via the gui and via rules.
 
 The rules syntax:
