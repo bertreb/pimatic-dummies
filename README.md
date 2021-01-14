@@ -110,7 +110,7 @@ armTime: The time (in seconds) before the AlarmPanel goes to Armed
 disarmTime: The time (in seconds) before the AlarmPanel goes to Disarmed
   default: 30
 ```
-The attributes can be used to interface with the Pimatic Alarm system. The attributes are:
+The state and status attributes can be used to interface with the Pimatic Alarm system.
 ```
 - state ["disarmed", "armedhome", "armedaway", "armednight"]
 - status ["ready", "arming", "disarming", "pending", "triggered"]
