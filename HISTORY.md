@@ -14,4 +14,4 @@
 * 20200703, v0.2.0
 	* added DummyThermostat device
 * 20210114, v0.3.0
-	* added AlarmPanel device
+	* added DummyAlarmPanel device
