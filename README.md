@@ -87,7 +87,7 @@ The state variables:
 
 DummyAlarmPanel
 ----
-The DummyAlarmPanel device is a alarmpanel device for arming and disarming Pimatic alarm systems. DummyAlarmPanel is home-assistant compatible.
+The DummyAlarmPanel device is a alarmpanel device for arming and disarming Pimatic alarm systems. DummyAlarmPanel is home-assistant compatible (via pimatic-hass).
 
 ![](/screens/dummy-alarmpanel.png)
 <br />edit
