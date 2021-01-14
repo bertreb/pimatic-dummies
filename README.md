@@ -90,12 +90,12 @@ DummyAlarmPanel
 The DummyAlarmPanel device is a alarmpanel device for arming and disarming Pimatic alarm systems. DummyAlarmPanel is home-assistant compatible.
 
 ![](/screens/dummy-alarmpanel.png)
-<br />
+<br />edit
 The device can be controlled via the gui or via rules. This device is compatible with pimatic-hass and will provide an alarm panel in home-assistant.
 
 The buttons explained:
 - 1 button for disarming. In Hass you need to use the configured pin to disarm
-- 3 buttons for arming; home, away or night
+- 3 buttons for arming; arm home, arm away or arm night
 - 4 info-buttons to informa about state transitions
 
 The device config:
