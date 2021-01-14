@@ -50,26 +50,25 @@ DummyThermostat
 ----
 The DummyThermostat device is a thermostat device with a heat, heatcool and cool mode.
 
-    ![](/screens/dummy-thermostat.png)
+![](/screens/dummy-thermostat.png)
 
 The device can be controlled via the gui and via rules.
 
 The rules syntax:
 
-`
+```
 thermostat <DummyThermostat device>
     heat | heatcool | cool |
     on | eco | off |
     setpoint [<temperature>|<$temp variable>] |
     setpoint low [<temperature>|<$temp variable>] | setpoint high [<temperature>|<$temp variable] |
     program manual | program auto
-`
-
+```
 With this device you get the maximum thermostat functionality in Google Assistant. For that this device can be added in pimatic-assistant.
 Real heaters and coolers can be connected via rules based on the DummyThermostat variables.
 
 The variables to be set:
-`
+```
 - setPoint: The target temperature in heat or cool mode. The first input in gui.
 - setPointLow: The low target temperature in heatcool mode. Below that value the heater will turn on. The second input in the gui.
 - setPointHigh: The high target temperature in heatcool mode. Above that value the cooler with turn on. The third input in the gui
@@ -77,14 +76,14 @@ The variables to be set:
 - power: Switch the thermostat on or off
 - mode: The current mode of the heater (heat,heatcool or cool)
 - program: The current program  (manual or auto)
-`
+```
 
 The state variables:
-`
+```
 - active: True if heater or cooler is on
 - heater: True if the heater is on
 - cooler: True if the cooler is on
-`
+```
 
 DummyAlarmPanel
 ----
