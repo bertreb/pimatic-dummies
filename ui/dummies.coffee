@@ -445,8 +445,140 @@ $(document).on 'templateinit', (event) ->
         .fail(ajaxAlertFail)
         .always( => @input3.spinbox('enable') )
 
+  class AlarmpanelItem extends pimatic.DeviceItem
+
+    constructor: (templData, @device) ->
+      super(templData, @device)
+
+      ###
+      @stAttr = @getAttribute('pending')
+      @stAttr2 = @getAttribute('triggered')
+      @stAttr3 = @getAttribute('arming')
+      @stAttr4 = @getAttribute('disarming')
+      
+      pendingValue = @stAttr.value()
+      triggeredValue = @stAttr2.value()
+      armingValue = @stAttr3.value()
+      disarmingValue = @stAttr4.value()
+      ###
+      @synced = @getAttribute('synced').value
+
+    getItemTemplate: => 'alarmpanel'
+
+    afterRender: (elements) =>
+      super(elements)
+
+      # find the buttons
+      @disarmedButton = $(elements).find('[name=disarmedButton]')
+      @armedHomeButton = $(elements).find('[name=armedHomeButton]')
+      @armedAwayButton = $(elements).find('[name=armedAwayButton]')
+      @armedNightButton = $(elements).find('[name=armedNightButton]')
+
+      @pendingButton = $(elements).find('[name=pendingButton]')
+      @armingButton = $(elements).find('[name=armingButton]')
+      @disarmingButton = $(elements).find('[name=disarmingButton]')
+      @triggeredButton = $(elements).find('[name=triggeredButton]')
+
+      @updateStateButtons()
+      @updateStatusButtons()
+
+      @getAttribute('state')?.value.subscribe( => @updateStateButtons() )
+      @getAttribute('status')?.value.subscribe( => @updateStatusButtons() )
+      return
+
+    # define the available actions for the template
+    modeDisarmed: -> @changeStateTo "disarmed"
+    modeArmedHome: -> @changeStateTo "armedhome"
+    modeArmedAway: -> @changeStateTo "armedaway"
+    modeArmedNight: -> @changeStateTo "armednight"
+
+    updateStateButtons:() =>
+      state = @getAttribute('state')?.value()
+      switch state
+        when "disarmed"
+          @updateDisarmedButton()
+        when "armedhome"
+          @updateArmedHomeButton()
+        when "armedaway"
+          @updateArmedAwayButton()
+        when "armednight"
+          @updateArmedNightButton()
+
+    updateStatusButtons:() =>
+      status = @getAttribute('status')?.value()
+      switch status
+        when "pending"
+          @updatePendingButton()
+        when "arming"
+          @updateArmingButton()
+        when "disarming"
+          @updateDisarmingButton()
+        when "triggered"
+          @updateTriggeredButton()
+        else
+          @clearStatusButtons()
+
+    updateDisarmedButton: =>
+      @disarmedButton.addClass('ui-btn-active')
+      @armedHomeButton.removeClass('ui-btn-active')
+      @armedAwayButton.removeClass('ui-btn-active')
+      @armedNightButton.removeClass('ui-btn-active')
+
+    updateArmedHomeButton: =>
+      @disarmedButton.removeClass('ui-btn-active')
+      @armedHomeButton.addClass('ui-btn-active')
+      @armedAwayButton.removeClass('ui-btn-active')
+      @armedNightButton.removeClass('ui-btn-active')
+
+    updateArmedAwayButton: =>
+      @disarmedButton.removeClass('ui-btn-active')
+      @armedHomeButton.removeClass('ui-btn-active')
+      @armedAwayButton.addClass('ui-btn-active')
+      @armedNightButton.removeClass('ui-btn-active')
+
+    updateArmedNightButton: =>
+      @disarmedButton.removeClass('ui-btn-active')
+      @armedHomeButton.removeClass('ui-btn-active')
+      @armedAwayButton.removeClass('ui-btn-active')
+      @armedNightButton.addClass('ui-btn-active')
+
+    updatePendingButton: =>
+      @pendingButton.addClass('ui-btn-active')
+      @armingButton.removeClass('ui-btn-active')
+      @disarmingButton.removeClass('ui-btn-active')
+      @triggeredButton.removeClass('ui-btn-active')
+
+    updateArmingButton: =>
+      @pendingButton.removeClass('ui-btn-active')
+      @armingButton.addClass('ui-btn-active')
+      @disarmingButton.removeClass('ui-btn-active')
+      @triggeredButton.removeClass('ui-btn-active')
+
+    updateDisarmingButton: =>
+      @pendingButton.removeClass('ui-btn-active')
+      @armingButton.removeClass('ui-btn-active')
+      @disarmingButton.addClass('ui-btn-active')
+      @triggeredButton.removeClass('ui-btn-active')
+
+    updateTriggeredButton: =>
+      @pendingButton.removeClass('ui-btn-active')
+      @armingButton.removeClass('ui-btn-active')
+      @disarmingButton.removeClass('ui-btn-active')
+      @triggeredButton.addClass('ui-btn-active')
+
+    clearStatusButtons: =>
+      @pendingButton.removeClass('ui-btn-active')
+      @armingButton.removeClass('ui-btn-active')
+      @disarmingButton.removeClass('ui-btn-active')
+      @triggeredButton.removeClass('ui-btn-active')
+
+    changeStateTo: (state) ->
+      @device.rest.changeArmTo({state}, global: no)
+        .done(ajaxShowToast)
+        .fail(ajaxAlertFail)
 
   # register the item-class
   pimatic.templateClasses['led-light'] = LedLightItem
   pimatic.templateClasses['light-rgbct'] = LightRGBCTItem
   pimatic.templateClasses['dummythermostat'] = DummyThermostatItem
+  pimatic.templateClasses['alarmpanel'] = AlarmpanelItem

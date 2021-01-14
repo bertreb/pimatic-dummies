@@ -5,7 +5,7 @@ This plugin creates dummy devices to use within Pimatic. Dummy device are mostly
 
 The plugin supports 3 devices; DummyLedLight, DummyLightRGBW and DummyThermostat
 
-DummyLedLight
+## DummyLedLight
 ----
 The DummyLedLight device is a renewed pimatic-led-light device made useable with node 8+. Its a dimmer actuator device with brightness (the dimmer), color temperature and color (RGB).
 
@@ -19,7 +19,7 @@ The rules syntax:
 set <DummyLedLight device> to [<hex color> | <colorname> | <temperature> | <$variable>]
 `
 
-DummyLightRGBW
+## DummyLightRGBW
 ----
 The DummyLightRGBW device is a dimmer actuator device with brightness (the dimmer), color temprature and color (RGB).
 This device is based on the RaspBee-RGBCT device from [treban](https://github.com/treban/pimatic-raspbee)
@@ -46,7 +46,7 @@ set <DummyLightRGBW device> to [<hex color> | <colorname> | <temperature> | <$va
 
 For the content of the variable, the same color logic applies
 
-DummyThermostat
+## DummyThermostat
 ----
 The DummyThermostat device is a thermostat device with a heat, heatcool and cool mode.
 
@@ -84,4 +84,42 @@ The state variables:
 - active: True if heater or cooler is on
 - heater: True if the heater is on
 - cooler: True if the cooler is on
+`
+
+## DummyAlarmPanel
+----
+The DummyAlarmPanel device is a alarmpanel device for arming and disarming Pimatic alarm systems. DummyAlarmPanel is home-assistant compatible.
+
+![](/screens/dummy-alarmpanel.png)
+The device can be controlled via the gui or via rules. This device is compatible with pimatic-hass and will provide an alarm panel in home-assistant.
+
+The buttons explained:
+- 1 button for disarming. In Hass you need to use the configured pin to disarm
+- 3 buttons for arming; home, away or night
+- 4 info-buttons to informa about state transitions
+
+The device config:
+`
+pin: The pincode for disarming the alarm in Hass.
+  default: "0000"
+triggerHome: The Pimatic device id for the alarm trigger in ArmHome state
+triggerAway: The Pimatic device id of the alarm trigger in ArmAway state
+triggerNight: The Pimatic device id of the alarm trigger in ArmNight state (optional)
+armTime: The time (in seconds) before the AlarmPanel goes to Armed
+  default: 30
+disarmTime: The time (in seconds) before the AlarmPanel goes to Disarmed
+  default: 30
+`
+The attributes can be used to interface with the Pimatic Alarm system. The attributes are:
+`
+- state ["disarmed", "armedhome", "armedaway", "armednight"]
+- status ["ready", "arming", "disarming", "pending", "triggered"]
+`
+Status 'ready' means that all the other status-buttons are off.
+
+The disarming and arming buttons can be controlled via rules.
+
+The rules syntax:
+`
+alarmpanel <DummyAlarmPanel device> [disarm | arm home | arm away | arm night]
 `

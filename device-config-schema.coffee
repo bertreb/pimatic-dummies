@@ -54,5 +54,32 @@ module.exports = {
         type: "number"
         default: 2
   }
-
+  DummyAlarmPanel: {
+    title: "DummyAlarmPanel config options"
+    type: "object"
+    extensions: ["xLink", "xAttributeOptions"]
+    properties:{
+      pin:
+        description: "The pincode for disarming the alarm"
+        type: "string"
+      triggerHome:
+        description: "The Pimatic device id of the alarm trigger in ArmHome state"
+        type: "string"
+      triggerAway:
+        description: "The Pimatic device id of the alarm trigger in ArmAway state"
+        type: "string"
+      triggerNight:
+        description: "The Pimatic device id of the alarm trigger in ArmNight state"
+        type: "string"
+        required: false
+      armTime:
+        description: "The time (in seconds) before the AlarmPanel goes to Armed"
+        type: "number"
+        default: 30
+      disarmTime:
+        description: "The time (in seconds) before the AlarmPanel goes to Disarmed"
+        type: "number"
+        default:30
+    }
+  }
 }

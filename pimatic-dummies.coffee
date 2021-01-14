@@ -32,14 +32,18 @@ module.exports = (env) ->
       @framework.deviceManager.registerDeviceClass 'DummyLightRGBW',
         configDef: deviceConfigDef.DummyLightRGBW
         createCallback: (config, lastState) => return new DummyLightRGBW(config, lastState, @framework)
-        
+
       @framework.deviceManager.registerDeviceClass 'DummyThermostat',
         configDef: deviceConfigDef.DummyThermostat
         createCallback: (config, lastState) => return new DummyThermostat(config, lastState, @framework)
 
+      @framework.deviceManager.registerDeviceClass 'DummyAlarmPanel',
+        configDef: deviceConfigDef.DummyAlarmPanel
+        createCallback: (config, lastState) => return new DummyAlarmPanel(config, lastState, @framework)
+
       @framework.ruleManager.addActionProvider(new ColorActionProvider(@framework))
       @framework.ruleManager.addActionProvider(new DummyThermostatActionProvider(@framework))
-
+      @framework.ruleManager.addActionProvider(new DummyAlarmPanelActionProvider(@framework))
 
       @framework.on "after init", =>
         # Check if the mobile-frontend was loaded and get a instance
@@ -83,7 +87,7 @@ module.exports = (env) ->
 
     toggle: =>
       if @power is false then @turnOn() else @turnOff()
-      Promise.resolve()    
+      Promise.resolve()
 
     setColor: (newColor) ->
       color = Color(newColor).rgb()
@@ -103,7 +107,7 @@ module.exports = (env) ->
     getDimlevel: () ->
       Promise.resolve @_dimlevel
 
-    changeDimlevelTo: (dimLevel) -> 
+    changeDimlevelTo: (dimLevel) ->
       @setBrightness(dimLevel)
 
 
@@ -258,7 +262,7 @@ module.exports = (env) ->
             _params = params.value
           return @setColor(params.value)
         when "temperature"
-          return @setCT(params.value)        
+          return @setCT(params.value)
         else
           return Promise.reject("wrong parameter type " + params.type)
 
@@ -1047,7 +1051,7 @@ module.exports = (env) ->
                   lKT = 0
                   hKT = 100
                   if s < lKT or s > hKT
-                    context?.addError("Color temprature must be between #{lKT} and #{hKT}")                 
+                    context?.addError("Color temprature must be between #{lKT} and #{hKT}")
                   color = s
                   match = m.getFullMatch()
 
@@ -1100,5 +1104,281 @@ module.exports = (env) ->
         ).catch((err)=>
           return __("\"%s\" Rule not executed", "set #{@params.type} to #{@params.value}")
         )
+
+  class DummyAlarmPanel extends env.devices.Device
+
+    template: "alarmpanel"
+
+    getTemplateName: -> "alarmpanel"
+
+    actions:
+      changeArmTo:
+        params:
+          state:
+            type: "string"
+
+    attributes:
+      state:
+        description: "The state of the alarmpanel"
+        type: "string"
+        label: "State"
+        enum: ["disarmed", "armedhome", "armedaway", "armednight"]
+        hidden: true
+      status:
+        description: "State transition status"
+        type: "string"
+        enum: ["ready", "arming", "disarming", "pending", "triggered"]
+        hidden: true
+      synced:
+        description: "Synced"
+        type: "boolean"
+        hidden: true
+
+    constructor: (@config, lastState, @framework) ->
+      @id = @config.id
+      @name = @config.name
+      @_state = "disarmed" # lastState?.state?.value or "disarmed"
+      @_status = "ready" #lastState?.pending?.value or "ready"
+      @_synced = true #lastState?.synced?.value or false
+
+      @_pin = @config.pin ? "0000"
+      @_armTime = @config.armTime ? 30
+      @_disarmTime = @config.disarmTime ? 30
+
+      @_triggerHome = @config.triggerHome
+      @_triggerAway = @config.triggerAway
+      @_triggerNight = @config.triggerNight ? null
+
+      @homeTriggerHandler = (state)=>
+        if @_state is 'armedhome'
+          if Boolean state
+            @changeStatusTo("triggered")
+          else
+            @changeStatusTo("ready")
+      @awayTriggerHandler = (state)=>
+        if @_state is 'armedaway'
+          if Boolean state
+            @changeStatusTo("triggered")
+          else
+            @changeStatusTo("ready")
+      @nightTriggerHandler = (state)=>
+        if @_state is 'armednight'
+          if Boolean state
+            @changeStatusTo("triggered")
+          else
+            @changeStatusTo("ready")
+
+
+      @framework.variableManager.waitForInit()
+      .then ()=>
+        @_homeDevice = @framework.deviceManager.getDeviceById(@_triggerHome)
+        if @_homeDevice?
+          if @_homeDevice.hasAttribute('state')
+            @_homeDevice.on 'state', @homeTriggerHandler
+          else
+            env.logger.error "HomeTrigger device not usable!"
+        else
+            env.logger.error "HomeTrigger device not found!"
+        @_awayDevice = @framework.deviceManager.getDeviceById(@_triggerAway)
+        if @_awayDevice?
+          if @_awayDevice.hasAttribute('state')
+            @_awayDevice.on 'state', @awayTriggerHandler
+          else
+            env.logger.error "AwayTrigger device not usable!"
+        else
+            env.logger.error "AwayTrigger device not found!"
+
+        @_nightDevice = @framework.deviceManager.getDeviceById(@_triggerNight)
+        if @_nightDevice?
+          if @_nightDevice.hasAttribute('state')
+            @_nightDevice.on 'state', @nightTriggerHandler
+          else
+            env.logger.debug "NightTrigger device not usable!"
+
+      super()
+
+    changeArmTo: (state) =>
+      @_setArm(state)
+      Promise.resolve()
+
+    _setArm: (state) =>
+      switch state
+        when "armedhome"
+          @_setState("armedhome")
+          @armHome()
+        when "armedaway"
+          @_setState('armedaway')
+          @armAway()
+        when "armednight"
+          @_setState('armednight')
+          @armNight()
+        when "disarmed"
+          @_setState('disarmed')
+          @disarm()
+        else
+          env.logger.debug "State not possible!"
+
+    _setState: (state) =>
+      #unless state is @_state
+      env.logger.debug "_setState: " + state
+      @_state = state
+      @emit 'state', state
+
+    changeStatusTo: (status) =>
+      @_setStatus(status)
+
+    _setStatus: (status) =>
+      unless status is @_status
+        env.logger.debug "_setStatus: " + status
+        @_status = status
+        @emit 'status', status
+
+    armHome: () ->
+      @_setStatus("arming")
+      setTimeout(()=>
+        @_setStatus("ready")
+        @_setState("armedhome")
+      , @_armTime*1000)
+
+    armAway: () =>
+      @_setStatus("arming")
+      @armAwayTimer = setTimeout(()=>
+        @_setStatus("ready")
+        @_setState("armedaway")
+      , @_armTime*1000)
+
+    armNight: () =>
+      @_setStatus("arming")
+      @armNightTimer = setTimeout(()=>
+        @_setStatus("ready")
+        @_setState("armednight")
+      , @_armTime*1000)
+
+    disarm: () =>
+      @_setStatus("disarming")
+      setTimeout(()=>
+        @_setStatus("ready")
+        @_setState("disarmed")
+      , @_disarmTime*1000)
+
+    changeSyncedTo: (synced) =>
+      @_synced = synced
+      @emit 'synced', synced
+
+    getState: () -> Promise.resolve(@_state)
+    getStatus: () -> Promise.resolve(@_status)
+    getSynced: () -> Promise.resolve(@_synced)
+
+    execute: (device, command) =>
+      env.logger.debug "Execute command: #{command}"
+      return new Promise((resolve, reject) =>
+        unless device?
+          env.logger.info "Device '#{@name}' is unknown"
+          return reject()
+        switch command
+          when "disarm"
+            @changeArmTo("disarmed")
+          when "armhome"
+            @changeArmTo("armedhome")
+          when "armaway"
+            @changeArmTo("armedaway")
+          when "armnight"
+            @changeArmTo("armednight")
+          else
+            reject("command '#{command}' not available")
+        resolve()
+      )
+
+
+    destroy:()->
+      clearTimeout(@armHomeTimer) if @armHomeTimer?
+      clearTimeout(@armAwayTimer) if @armAwayTimer?
+      clearTimeout(@armNightTimer) if @armNightTimer?
+      clearTimeout(@disarmTimer) if @disarmTimer?
+      @_homeDevice.removeListener 'state', @homeTriggerHandler if @_homeDevice?
+      @_awayDevice.removeListener 'state', @awayTriggerHandler if @_awayDevice?
+      @_nightDevice.removeListener 'state', @nightTriggerHandler if @_nightDevice?
+      super()
+
+  class DummyAlarmPanelActionProvider extends env.actions.ActionProvider
+
+    constructor: (@framework) ->
+
+    parseAction: (input, context) =>
+
+      @dummyAlarmPanelDevice = null
+
+      @command = ""
+
+      dummyAlarmPanelDevices = _(@framework.deviceManager.devices).values().filter(
+        (device) => device.config.class == "DummyAlarmPanel"
+      ).value()
+
+      setCommand = (_command) =>
+        @command = _command
+
+      m = M(input, context)
+        .match('alarmpanel ')
+        .matchDevice(dummyAlarmPanelDevices, (m, d) =>
+          # Already had a match with another device?
+          if dummyAlarmPanelDevice? and dummyAlarmPanelDevice.config.id isnt d.config.id
+            context?.addError(""""#{input.trim()}" is ambiguous.""")
+            return
+          @dummyAlarmPanelDevice = d
+        )
+        .or([
+          ((m) =>
+            return m.match(' disarm', (m)=>
+              setCommand('disarm')
+              match = m.getFullMatch()
+            )
+          ),
+          ((m) =>
+            return m.match(' arm home', (m)=>
+              setCommand('armhome')
+              match = m.getFullMatch()
+            )
+          ),
+          ((m) =>
+            return m.match(' arm away', (m)=>
+              setCommand('armaway')
+              match = m.getFullMatch()
+            )
+          ),
+          ((m) =>
+            return m.match(' arm night', (m)=>
+              setCommand('armnight')
+              match = m.getFullMatch()
+            )
+          )
+        ])
+
+      match = m.getFullMatch()
+      if match?
+        env.logger.debug "Rule matched: '", match, "' and passed to Action handler"
+        return {
+          token: match
+          nextInput: input.substring(match.length)
+          actionHandler: new DummyAlarmPanelActionHandler(@framework, @dummyAlarmPanelDevice, @command)
+        }
+      else
+        return null
+
+  class DummyAlarmPanelActionHandler extends env.actions.ActionHandler
+
+    constructor: (@framework, @dummyAlarmPanelDevice, @command) ->
+
+    executeAction: (simulate) =>
+      if simulate
+        return __("would have set alarmpanel \"%s\"", "")
+      else
+        @dummyAlarmPanelDevice.execute(@dummyAlarmPanelDevice, @command)
+        .then(()=>
+          return __("\"%s\" Rule executed", @command)
+        ).catch((err)=>
+          return __("\"%s\" Rule not executed", JSON.stringify(err))
+        )
+
+
 
   return new DummiesPlugin()
