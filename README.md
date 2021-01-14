@@ -96,10 +96,10 @@ The device can be controlled via the gui or via rules. This device is compatible
 The buttons explained:
 - 1 button for disarming. In Hass you need to use the configured pin to disarm
 - 3 buttons for arming; arm home, arm away or arm night
-- 4 info-buttons to informa about state transitions
+- 4 info-buttons to inform about state transitions
 
 The device config:
-`
+```
 pin: The pincode for disarming the alarm in Hass.
   default: "0000"
 triggerHome: The Pimatic device id for the alarm trigger in ArmHome state
@@ -109,12 +109,12 @@ armTime: The time (in seconds) before the AlarmPanel goes to Armed
   default: 30
 disarmTime: The time (in seconds) before the AlarmPanel goes to Disarmed
   default: 30
-`
+```
 The attributes can be used to interface with the Pimatic Alarm system. The attributes are:
-`
+```
 - state ["disarmed", "armedhome", "armedaway", "armednight"]
 - status ["ready", "arming", "disarming", "pending", "triggered"]
-`
+```
 Status 'ready' means that all the other status-buttons are off.
 
 The disarming and arming buttons can be controlled via rules.
