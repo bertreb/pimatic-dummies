@@ -79,7 +79,11 @@ module.exports = {
       disarmTime:
         description: "The time (in seconds) before the AlarmPanel goes to Disarmed"
         type: "number"
-        default:30
+        default: 30
+      pendingTime:
+        description: "The time (in seconds) after a trigger the alarm goes to Triggered"
+        type: "number"
+        default: 30
     }
   }
 }

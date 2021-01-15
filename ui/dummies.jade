@@ -81,9 +81,9 @@ script#alarmpanel-template(type='text/template')
           a.ui-last-child.ui-btn.ui-corner-all(name='armedNightButton', data-bind='click: modeArmedNight') armed night
       .button-control.ui-controlgroup.ui-controlgroup-horizontal.ui-corner-all.ui-mini.no-carousel-slide(data-role='controlgroup',       data-type='horizontal', data-mini='true', data-enhanced='true')
         .ui-controlgroup-controls
-          a.ui-first-child.ui-btn.ui-corner-all(name='pendingButton') pending
-          a.ui-btn.ui-corner-all(name='armingButton') arming    
+          a.ui-first-child.ui-btn.ui-corner-all(name='armingButton') arming
           a.ui-btn.ui-corner-all(name='disarmingButton') disarming    
+          a.ui-btn.ui-corner-all(name='pendingButton') pending    
           a.ui-last-child.ui-btn.ui-corner-all(name='triggeredButton') triggered
       span.attributes(data-bind="template: { name: 'attribute-template', foreach: $data.device.attributes, afterRender: $data.afterAttributeRender }")
 

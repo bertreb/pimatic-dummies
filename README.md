@@ -109,6 +109,8 @@ armTime: The time (in seconds) before the AlarmPanel goes to Armed
   default: 30
 disarmTime: The time (in seconds) before the AlarmPanel goes to Disarmed
   default: 30
+pendingTime: The time (in seconds) after a trigger before the AlarmPanel goed to Triggered
+  default: 30
 ```
 The state and status attributes can be used to interface with the Pimatic Alarm system.
 ```

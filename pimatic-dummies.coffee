@@ -1144,30 +1144,36 @@ module.exports = (env) ->
       @_pin = @config.pin ? "0000"
       @_armTime = @config.armTime ? 30
       @_disarmTime = @config.disarmTime ? 30
+      @_pendingTime = @config.pendingTime ? 30
 
       @_triggerHome = @config.triggerHome
       @_triggerAway = @config.triggerAway
       @_triggerNight = @config.triggerNight ? null
 
       @homeTriggerHandler = (state)=>
-        if @_state is 'armedhome'
+        if @_state is 'armedhome' and @_status is 'ready'
           if Boolean state
-            @changeStatusTo("triggered")
-          else
-            @changeStatusTo("ready")
+            @clearArmTimers()
+            @changeStatusTo("pending")
+            @pendingTimer = setTimeout( ()=>
+              @changeStatusTo("triggered")
+            , @_pendingTime*1000)
       @awayTriggerHandler = (state)=>
-        if @_state is 'armedaway'
+        if @_state is 'armedaway' and @_status is 'ready'
           if Boolean state
-            @changeStatusTo("triggered")
-          else
-            @changeStatusTo("ready")
+            @clearArmTimers()
+            @changeStatusTo("pending")
+            @pendingTimer = setTimeout( ()=>
+              @changeStatusTo("triggered")
+            , @_pendingTime*1000)
       @nightTriggerHandler = (state)=>
-        if @_state is 'armednight'
+        if @_state is 'armednight' and @_status is 'ready'
           if Boolean state
-            @changeStatusTo("triggered")
-          else
-            @changeStatusTo("ready")
-
+            @clearArmTimers()
+            @changeStatusTo("pending")
+            @pendingTimer = setTimeout( ()=>
+              @changeStatusTo("triggered")
+            , @_pendingTime*1000)
 
       @framework.variableManager.waitForInit()
       .then ()=>
@@ -1197,23 +1203,30 @@ module.exports = (env) ->
 
       super()
 
+    clearArmTimers: () =>
+      clearTimeout(@armHomeTimer) if @armHomeTimer?
+      clearTimeout(@armAwayTimer) if @armAwayTimer?
+      clearTimeout(@armNightTimer) if @armNightTimer?
+      clearTimeout(@disarmTimer) if @disarmTimer?
+      clearTimeout(@pendingTimer) if @pendingTimer?
+
     changeArmTo: (state) =>
       @_setArm(state)
       Promise.resolve()
 
     _setArm: (state) =>
+      @clearArmTimers()
       switch state
         when "armedhome"
-          #@_setState("armedhome")
-          @armHome()
+          unless @_status in ["pending","triggered"]
+            @armHome()
         when "armedaway"
-          #@_setState('armedaway')
-          @armAway()
+          unless @_status in ["pending","triggered"]
+            @armAway()
         when "armednight"
-          #@_setState('armednight')
-          @armNight()
+          unless @_status in ["pending","triggered"]
+            @armNight()
         when "disarmed"
-          #@_setState('disarmed')
           @disarm()
         else
           env.logger.debug "State not possible!"
@@ -1235,7 +1248,7 @@ module.exports = (env) ->
 
     armHome: () ->
       @_setStatus("arming")
-      setTimeout(()=>
+      @armHomeTimer = setTimeout(()=>
         @_setStatus("ready")
         @_setState("armedhome")
       , @_armTime*1000)
@@ -1295,6 +1308,7 @@ module.exports = (env) ->
       clearTimeout(@armAwayTimer) if @armAwayTimer?
       clearTimeout(@armNightTimer) if @armNightTimer?
       clearTimeout(@disarmTimer) if @disarmTimer?
+      clearTimeout(@pendingTimer) if @pendingTimer?
       @_homeDevice.removeListener 'state', @homeTriggerHandler if @_homeDevice?
       @_awayDevice.removeListener 'state', @awayTriggerHandler if @_awayDevice?
       @_nightDevice.removeListener 'state', @nightTriggerHandler if @_nightDevice?

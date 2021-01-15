@@ -17,3 +17,6 @@
 	* added DummyAlarmPanel device
 * 20210115, v0.3.1
 	* update state change behaviour
+* 20210115, v0.3.2
+	* update state change behaviour
+	* added pendingTime
