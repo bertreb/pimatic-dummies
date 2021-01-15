@@ -1204,16 +1204,16 @@ module.exports = (env) ->
     _setArm: (state) =>
       switch state
         when "armedhome"
-          @_setState("armedhome")
+          #@_setState("armedhome")
           @armHome()
         when "armedaway"
-          @_setState('armedaway')
+          #@_setState('armedaway')
           @armAway()
         when "armednight"
-          @_setState('armednight')
+          #@_setState('armednight')
           @armNight()
         when "disarmed"
-          @_setState('disarmed')
+          #@_setState('disarmed')
           @disarm()
         else
           env.logger.debug "State not possible!"

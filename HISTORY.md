@@ -15,3 +15,5 @@
 	* added DummyThermostat device
 * 20210114, v0.3.0
 	* added DummyAlarmPanel device
+* 20210115, v0.3.1
+	* update state change behaviour
